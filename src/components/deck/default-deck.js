@@ -1,9 +1,18 @@
-import React, { forwardRef, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import propTypes from 'prop-types';
 import Deck from './deck';
 import useBroadcastChannel from '../../hooks/use-broadcast-channel';
 
-export default function DefaultDeck({ overviewMode = false, ...props }) {
+/**
+ * Spectacle DefaultDeck is a wrapper around the Deck component that adds Broadcast channel support
+ * for audience and presenter modes. This is intentionally not built into the base Deck component
+ * to allow for extensibility outside of core Spectacle functionality.
+ */
+export default function DefaultDeck({
+  overviewMode = false,
+  printMode = false,
+  ...props
+}) {
   const deck = React.useRef();
 
   const [postMessage] = useBroadcastChannel(
@@ -23,7 +32,18 @@ export default function DefaultDeck({ overviewMode = false, ...props }) {
     postMessage('SYNC_REQUEST');
   }, [postMessage]);
 
-  return <Deck overviewMode={overviewMode} ref={deck} {...props} />;
+  return (
+    <Deck
+      overviewMode={overviewMode}
+      printMode={printMode}
+      ref={deck}
+      {...props}
+    />
+  );
 }
 
-DefaultDeck.propTypes = { ...Deck.propTypes, overviewMode: propTypes.bool };
+DefaultDeck.propTypes = {
+  ...Deck.propTypes,
+  overviewMode: propTypes.bool,
+  printMode: propTypes.bool
+};
